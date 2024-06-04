@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.trade.model.mapper.TradeMapper">
+
+<!--house_info_id, current_price, expire_date -> insert-->
+	
+	
+	<resultMap type="tradeInfoDto" id="tradeInfos">
+		<result column="buildYear" property="buildYear"/>
+		<result column="roadName" property="roadName"/>
+		<result column="dong" property="dong"/>
+		<result column="apartmentName" property="apartmentName"/>
+		<result column="jibun" property="jibun"/>
+		<result column="current_price" property="currentPrice"/>
+		<result column="expire_date" property="expireDate"/>
+		<result column="lat" property="lat"/>
+		<result column="lng" property="lng"/>
+		<result column="aptCode" property="houseInfoId"/>
+		<result column="price" property="price"/>
+		<result column="house_trade_id" property="houseTradeId"/>
+		<result column="user_id" property="userId"/>
+	</resultMap>
+	<!--private int tradeInfoId;
+	private String userId;
+	private int currentPrice;
+	private String expireDate;-->
+	<insert id="regist" parameterType="houseTradeDto">
+		insert into housetrade (house_info_id, current_price, expire_date)
+		values (#{houseInfoId}, #{currentPrice}, #{expireDate})
+	</insert>
+	
+	<!--private int houseTradeId;
+	private int price;
+	private String userId;-->
+<!--//	new_price, house_trade_id, user_id-->
+<!--1. tradeinfo 테이블에 newPrice, userId, houseTradeId insert하기
+2. housetrade 테이블에 currentPrice, userId update하기-->
+	<insert id="insertTradeInfo" parameterType="tradeInfoDto">
+		INSERT INTO tradeinfo (house_trade_id, house_info_id, user_id, price)
+           values (#{houseTradeId}, #{houseInfoId}, #{userId}, #{price})
+	</insert>
+	 <select id="countTradeInfo" resultType="int" parameterType="tradeInfoDto">
+        SELECT COUNT(*)
+        FROM tradeinfo
+        WHERE user_id = #{userId} AND house_trade_id = #{houseTradeId}
+    </select>
+
+    <update id="updateTradeInfo" parameterType="tradeInfoDto">
+        UPDATE tradeinfo
+        SET price = #{price}
+        WHERE user_id = #{userId} AND house_trade_id = #{houseTradeId}
+    </update>
+	<update id="updateHouseTrade" parameterType="tradeInfoDto">
+		update housetrade
+		set current_price = #{price},
+			user_id = #{userId}
+		where house_trade_id = #{houseTradeId}
+	</update>
+	<!--1. tradeinfo 테이블에서 user_id가 #{userId}와 동일한 행 모두 찾기
+	2. 해당 행의 price, house_trade_id, trade_info_id, house_info_id 찾기
+	3. house_info_id가 같은 아파트를 반환-->
+	<select id="myTradeInfo" parameterType="String" resultMap="tradeInfos">
+		SELECT t.trade_info_id, t.house_trade_id, t.price, t.user_id, h.*
+		FROM tradeinfo t
+		INNER JOIN houseinfo h 
+		ON t.house_info_id = h.aptCode
+		where user_id = #{userId}
+	</select>
+</mapper>

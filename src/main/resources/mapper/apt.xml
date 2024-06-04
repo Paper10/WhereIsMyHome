@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.apt.model.mapper.AptMapper">
+	<resultMap type="aptDto" id="apts">
+		<result column="apartmentname" property="apartmentName"/>
+		<result column="floor" property="floor"/>
+		<result column="area" property="area"/>
+		<result column="dong" property="dong"/>
+		<result column="dealAmount" property="dealAmount"/>
+		<result column="lat" property="lat"/>
+		<result column="lng" property="lng"/>
+		<result column="aptCode" property="houseInfoId"/>
+	</resultMap>
+	<resultMap type="houseTradeDto" id="trades">
+		<result column="buildYear" property="buildYear"/>
+		<result column="roadName" property="roadName"/>
+		<result column="dong" property="dong"/>
+		<result column="apartmentName" property="apartmentName"/>
+		<result column="jibun" property="jibun"/>
+		<result column="current_price" property="currentPrice"/>
+		<result column="expire_date" property="expireDate"/>
+		<result column="lat" property="lat"/>
+		<result column="lng" property="lng"/>
+		<result column="aptCode" property="houseInfoId"/>
+		<result column="house_trade_id" property="houseTradeId"/>
+		<result column="user_id" property="userId"/>
+	</resultMap>
+	
+	<resultMap type="aptDto" id="subs">
+		<result column="name" property="apartmentName"/>
+		<result column="lineNum" property="floor"/>
+		<result column="lat" property="lat"/>
+		<result column="lng" property="lng"/>
+	</resultMap>
+	
+	<select id="tradeAptList" parameterType="String" resultMap="trades">
+		select hi.buildYear, hi.roadName, hi.dong, hi.apartmentName, hi.jibun, ht.current_price, ht.expire_date, 
+		hi.lng, hi.lat, hi.aptCode , ht.house_trade_id, ht.user_id
+		from housetrade ht
+		join houseinfo hi ON ht.house_info_id = hi.aptCode
+		where hi.dongCode = #{dongCode}
+	</select>
+	
+	<select id="aptList" parameterType="String" resultMap="trades">
+		select hi.buildYear, hi.roadName, hi.dong, hi.apartmentName, hi.jibun, hi.lng, hi.lat, hi.aptCode 
+		from houseinfo hi
+		where hi.dongCode = #{dongCode}
+	</select>
+	
+	
+	<select id="list" parameterType="map" resultMap="apts">
+		select hi.apartmentname, hd.floor, hd.area, hi.dong, hd.dealAmount, 
+		hi.lat, hi.lng, hi.aptCode
+		from housedeal hd
+		join houseinfo hi ON hd.aptCode = hi.aptCode
+		where hi.dongCode = #{dongCode}
+		AND hd.dealYear = #{year}
+		AND hd.dealMonth = #{month}
+	</select>
+	
+	<select id="subway" parameterType="map" resultMap="subs">
+		select name, lineNum, lat, lng
+		from subway
+	</select>
+	
+	<select id="recommend" parameterType="map" resultMap="apts">
+		select hi.apartmentname, hd.floor, hd.area, hi.dong, hd.dealAmount, hi.lat, hi.lng
+		from housedeal hd
+		join houseinfo hi ON hd.aptCode = hi.aptCode
+		where hi.dongCode = #{dongCode}
+	</select>
+
+</mapper>

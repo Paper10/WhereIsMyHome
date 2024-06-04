@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.map.model.mapper.MapMapper">
+
+	<select id="getSido" resultType="sidoGugunCodeDto">
+		select distinct left(dongCode,2) dongCode, sidoName 
+		from dongcode
+        where length(dongName) > 0
+		order by dongcode
+	</select>
+	
+	<select id="getGugunInSido" parameterType="string" resultType="sidoGugunCodeDto">
+		select distinct left(dongCode,5) dongCode, gugunName
+		from dongcode
+		where left(dongCode,2) = #{sido} and length(dongName) > 0
+		order by dongCode
+	</select>
+	
+	<select id="getDongInGugun" parameterType="string" resultType="sidoGugunCodeDto">
+		select dongCode, dongName
+		from dongcode
+		where left(dongCode,5) = #{gugun} and length(dongName) > 0
+		order by dongCode
+	</select>
+</mapper>
